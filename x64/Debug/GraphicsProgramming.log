@@ -1,0 +1,4 @@
+﻿  GraphicsProgramming.cpp
+C:\Users\caspa\source\repos\GraphicsProgramming\GraphicsProgramming\GraphicsProgramming.cpp(19,15): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
+C:\Users\caspa\source\repos\GraphicsProgramming\GraphicsProgramming\GraphicsProgramming.cpp(274,38): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+  GraphicsProgramming.vcxproj -> C:\Users\caspa\source\repos\GraphicsProgramming\x64\Debug\GraphicsProgramming.exe
