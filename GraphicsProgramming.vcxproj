@@ -146,10 +146,19 @@
     <ClCompile Include="GraphicsProgramming.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="fragmentShaderSky.shader" />
+    <None Include="fragModel.shader" />
     <None Include="vertexShader.shader" />
+    <None Include="vertexShaderSky.shader" />
+    <None Include="vertModel.shader" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="fragmentShader.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="mesh.h" />
+    <ClInclude Include="model.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
