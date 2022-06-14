@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
 
 #include <GLAD\glad.h>
 #include <GLFW\glfw3.h>
@@ -32,7 +31,32 @@ unsigned int myProgram, skyProgram, modelProgram;
 // Textures
 unsigned int heightmapID, heightmapNormalID, rockID, snowID, grassID;
 
-Model* backpack;
+Model* grass;
+
+class Grass {
+public:
+    Model* grass = nullptr;
+    glm::vec3 position = glm::vec3(0, 0, 0);
+    glm::vec3 rotation = glm::vec3(0, 0, 0);
+    float scale = 1;
+
+    Grass() {
+
+    }
+
+    Grass(Model* grass, glm::vec3 position, glm::vec3 rotation, float scale) {
+        this->grass = grass;
+        this->position = position;
+        this->rotation = rotation;
+        this->scale = scale;
+    }
+};
+
+const int grassCount = 2048;
+Grass patches[grassCount];
+
+void distributeGrass();
+void renderGrass(unsigned int shader, Grass patches[], glm::mat4 view, glm::mat4 projection);
 
 void handleInput(GLFWwindow* window, float deltaTime)
 {
@@ -45,19 +69,19 @@ void handleInput(GLFWwindow* window, float deltaTime)
     float sensitivity = 20.0f * deltaTime;
     float step = speed * deltaTime;
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)				w = 1;
-    else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_RELEASE)		w = 0;
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)				w =  1;
+    else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_RELEASE)		w =  0;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)				s = -1;
-    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_RELEASE)		s = 0;
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)				a = 1;
-    else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_RELEASE)		a = 0;
+    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_RELEASE)		s =  0;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)				a =  1;
+    else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_RELEASE)		a =  0;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)				d = -1;
-    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE)		d = 0;
+    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE)		d =  0;
 
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)				space = 1;
     else if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)		space = 0;
-    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)		ctrl = -1;
-    else if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE)	ctrl = 0;
+    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)		ctrl  =-1;
+    else if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE)	ctrl  = 0;
 
     if (cursorX == -1) {
         glfwGetCursorPos(window, &cursorX, &cursorY);
@@ -83,7 +107,7 @@ void handleInput(GLFWwindow* window, float deltaTime)
     
     // update camera position / forward & up
     glm::vec3 translation(a + d, 0, w + s);
-    cameraPosition += q * translation;
+    cameraPosition += q * translation * step;
 
     cameraPosition += glm::vec3(0, space + ctrl, 0);
 
@@ -118,6 +142,7 @@ int main()
     glViewport(0, 0, width, height);
 
     setupResources();
+    distributeGrass();
 
     // OPENGL SETTINGS //
     glEnable(GL_CULL_FACE);
@@ -141,12 +166,17 @@ int main()
         renderSkybox(view, projection);
         renderTerrain(view, projection);
 
+        //for (int i = 0; i < grassCount; i++) {
+        //    Grass myGrass = patches[i];
+        //    renderModel(myGrass.grass, modelProgram, myGrass.position, myGrass.rotation, myGrass.scale, view, projection);
+        //}
+
+        renderGrass(modelProgram, patches, view, projection);
+
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glDisable(GL_BLEND);
-
-        renderModel(backpack, modelProgram, glm::vec3(0,0,5), glm::vec3(0,0,0), 50, view, projection);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -158,6 +188,7 @@ int main()
 
 void renderTerrain(glm::mat4 view, glm::mat4 projection) {
     glUseProgram(myProgram);
+    glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glEnable(GL_DEPTH_TEST);
 
@@ -186,6 +217,23 @@ void renderTerrain(glm::mat4 view, glm::mat4 projection) {
 
     glBindVertexArray(plane);
     glDrawElements(GL_TRIANGLES, planeSize, GL_UNSIGNED_INT, 0);
+}
+
+void distributeGrass() {
+    int width, height, comps;
+    unsigned char* data = stbi_load("heightmap.png", &width, &height, &comps, 4);
+
+    for (int i = 0; i < grassCount; i++) {
+        int x, z;
+        float y;
+        x = rand() % width;
+        z = rand() % height;
+        y = data[(width * z + x) * 4] / 255.0f;
+        y *= 100.f;
+
+        glm::vec3 position = glm::vec3(x, y, z);
+        patches[i] = Grass(grass, position, glm::vec3(0, 0, 0), 1);
+    }
 }
 
 void renderSkybox(glm::mat4 view, glm::mat4 projection) {
@@ -217,7 +265,7 @@ void setupResources() {
     /// SETUP OBJECT ///
     stbi_set_flip_vertically_on_load(true);
 
-    backpack = new Model("backpack/backpack.obj");
+    grass = new Model("grass/GrassPatch.obj");
 
 // need 24 vertices for normal/uv-mapped Cube
 
@@ -379,13 +427,47 @@ void setupResources() {
     glUniform1i(glGetUniformLocation(myProgram, "grass"), 4);
 }
 
+void renderGrass(unsigned int shader, Grass patches[], glm::mat4 view, glm::mat4 projection) {
+    // Use Shader
+    glUseProgram(shader);
+
+    glEnable(GL_DEPTH);
+    glDisable(GL_CULL_FACE);
+
+
+    for (int i = 0; i < grassCount; i++) {
+        // Build World Matrix
+        glm::mat4 world = glm::mat4(1);
+        // Position
+        world = glm::translate(world, patches[i].position);
+
+        // Scale
+        world = glm::scale(world, glm::vec3(patches[i].scale));
+
+        // Rotation
+        glm::quat q(patches[i].rotation);
+        world *= glm::toMat4(q);
+
+        // Set Shader Settings
+        glUniformMatrix4fv(glGetUniformLocation(shader, "world"), 1, GL_FALSE, glm::value_ptr(world));
+        glUniformMatrix4fv(glGetUniformLocation(shader, "view"), 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        glUniform3fv(glGetUniformLocation(shader, "cameraPosition"), 1, glm::value_ptr(cameraPosition));
+
+        float t = glfwGetTime();
+        t = t * 0.1f;
+        glUniform3f(glGetUniformLocation(shader, "lightDirection"), glm::cos(t), -0.5f, glm::sin(t));
+
+        patches[i].grass->Draw(shader);
+    }
+}
+
 void renderModel(Model* model, unsigned int shader, glm::vec3 position, glm::vec3 rotation, float scale, glm::mat4 view, glm::mat4 projection) {
     // Use Shader
     glUseProgram(shader);
 
     glEnable(GL_DEPTH);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+    glDisable(GL_CULL_FACE);
 
     // Build World Matrix
     glm::mat4 world = glm::mat4(1);

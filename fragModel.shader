@@ -18,8 +18,8 @@ float lerp(float a, float b, float t) {
     return a + (b - a) * t;
 }
 
-void clip(float d) {
-    if (d <= 0.0) discard;
+void clip(float d, float edge) {
+    if (d <= edge) discard;
 }
 
 void main()
@@ -27,9 +27,10 @@ void main()
     vec3 lightDir = normalize(vec3(lightDirection));
     
     vec4 diffuse = texture(texture_diffuse1, TexCoords);
+    clip(diffuse.a, 0.5);
     vec4 specTex = texture(texture_specular1, TexCoords);
 
-    float light = max(dot(-lightDir, Normals), 0.0);
+    float light = max(abs(dot(-lightDir, Normals)), 0.0);
 
     vec3 viewDir = normalize(cameraPosition - FragPos.rgb);
     vec3 refl = reflect(lightDir, Normals);
@@ -40,7 +41,7 @@ void main()
     float spec = pow(max(dot(viewDir, refl), 0.0), lerp(1, 128, roughness));
     vec3 specular = spec * specTex.rgb;
 
-    vec4 result = diffuse * max(light * ambientOcclusion, 0.2 * ambientOcclusion) + vec4(specular, 0);
+    vec4 result = diffuse * light + vec4(specular, 0);
     result.a = light;
 
     FragColor = result;

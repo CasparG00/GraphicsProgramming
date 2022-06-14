@@ -50,9 +50,9 @@ void main()
 
 	float snowCover = smoothstep(0.6, 0.63, worldPixel.y / 100);
 	
-	vec3 grassCol = triplanar(worldPixel, grass, 0.25);
-	vec3 rockCol = triplanar(worldPixel, rock, 0.25);
-	vec3 snowCol = triplanar(worldPixel, snow, 0.25);
+	vec3 grassCol = triplanar(worldPixel, grass, 0.2);
+	vec3 rockCol = triplanar(worldPixel, rock, 0.2);
+	vec3 snowCol = triplanar(worldPixel, snow, 0.2);
 
 	vec3 diffuse = lerp(grassCol, snowCol, snowCover) * rockCover + rockCol * (1 - rockCover);
 
