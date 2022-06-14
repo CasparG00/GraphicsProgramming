@@ -63,30 +63,6 @@ struct Texture {
     std::string type;
 };
 
-class Mesh {
-    public:
-        // mesh data
-        vector<Vertex>       vertices;
-        vector<unsigned int> indices;
-        vector<Texture>      textures;
-
-        // Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures);
-        Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures)
-        {
-            this->vertices = vertices;
-            this->indices = indices;
-            this->textures = textures;
-
-            setupMesh();
-        }
-        void Draw(Shader &shader);
-    private:
-        //  render data
-        unsigned int VAO, VBO, EBO;
-
-        void setupMesh();
-}; 
-
 int main()
 {
     //std::cout << "Wayo.\n";
