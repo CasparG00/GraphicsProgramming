@@ -148,12 +148,14 @@
   <ItemGroup>
     <None Include="fragmentShaderSky.shader" />
     <None Include="fragModel.shader" />
+    <None Include="fragScreen.shader" />
     <None Include="vertexShader.shader" />
     <None Include="vertexShaderSky.shader" />
     <None Include="vertModel.shader" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="fragmentShader.shader" />
+    <Text Include="vertScreen.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mesh.h" />

@@ -38,9 +38,15 @@
     <None Include="vertModel.shader">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="fragScreen.shader">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="fragmentShader.shader">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="vertScreen.shader">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>
