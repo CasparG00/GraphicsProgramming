@@ -5,5 +5,4 @@ C:\Users\caspa\source\repos\GraphicsProgramming\GraphicsProgramming\GraphicsProg
 C:\Users\caspa\source\repos\GraphicsProgramming\GraphicsProgramming\GraphicsProgramming.cpp(272,13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\Users\caspa\source\repos\GraphicsProgramming\GraphicsProgramming\GraphicsProgramming.cpp(541,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\Users\caspa\source\repos\GraphicsProgramming\GraphicsProgramming\GraphicsProgramming.cpp(575,13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
   GraphicsProgramming.vcxproj -> C:\Users\caspa\source\repos\GraphicsProgramming\x64\Debug\GraphicsProgramming.exe
